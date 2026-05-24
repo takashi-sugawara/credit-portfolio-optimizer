@@ -1,7 +1,7 @@
 # 💳 Credit Portfolio Optimizer
 ### クレジットカード与信枠アロケーション数理最適化シミュレータ
 
-[![Streamlit App](https://static.streamlit.io/badge_svg.svg)](https://share.streamlit.io/)
+[![Streamlit App](https://static.streamlit.io/badge_svg.svg)](https://credit-portfolio-optimizer-gwrbt3qndzw7p8t6euuumm.streamlit.app/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/)
 
