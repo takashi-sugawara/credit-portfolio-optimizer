@@ -1,0 +1,14 @@
+name: credit_card_demo
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - ipopt
+  - pip
+  - pip:
+    - pyomo
+    - streamlit
+    - matplotlib
+    - numpy
+    - pandas
+    - plotly
