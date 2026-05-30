@@ -1,9 +1,115 @@
 # 💳 Credit Portfolio Optimizer
-### クレジットカード与信枠アロケーション数理最適化シミュレータ
+### Credit Limit Allocation Mathematical Optimization Simulator / クレジットカード与信枠アロケーション数理最適化シミュレータ
 
 [![Streamlit App](https://static.streamlit.io/badge_svg.svg)](https://credit-portfolio-optimizer-gwrbt3qndzw7p8t6euuumm.streamlit.app/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/)
+
+English | [日本語](#japanese)
+
+This application is a dashboard that dynamically simulates the optimal credit limit allocation to maximize the expected net profit (or minimize the expected loss) of the entire portfolio. It uses mathematical optimization (Pyomo + NLP solver Ipopt) and takes into account the default risk of individual credit card members (Probability of Default: PD, Loss Given Default: LGD) and the elasticity model of their willingness to spend.
+
+---
+
+## 🌟 Key Features
+
+### 1. 🏦 Current Portfolio Analysis (Macro Statistics Visualization)
+Before running the optimization, you can instantly visualize the macro statistics (total credit, average PD, expected loss, expected net profit, etc.) and customer attributes (segment, occupation, credit rating, credit limit distribution, segment x rating heatmap) under the current rule-based credit limits, allowing you to grasp structural issues in the current portfolio.
+
+### 2. 🎯 Optimization Simulation (Linking Decision Making and Practical Rules)
+- **Selection of Two Optimization Approaches:**
+  - **Profit Maximization (Profit Max):** Maximizes expected net profit while keeping the expected loss (allowance for bad debts) of the entire portfolio below a certain "allowable upper limit".
+  - **Risk Minimization (Risk Min):** Minimizes overall default expected loss while achieving a "target expected net profit" which is a must-achieve management goal.
+- **Automatic Application of Practical Rules (Post-processing):**
+  The following practical business rules are automatically applied to the theoretical continuous value solutions calculated by the continuous solver:
+  - Rounding (discretization) to the credit limit menu ({10, 30, 50, 70, 100} thousand JPY)
+  - Uniform upper limit restriction (100,000 JPY or less) for housewives and students
+  - Rule prohibiting limit reduction for the shopping-only segment (preventing customer churn)
+- **Dynamic Warning of "Constraint Breakthrough" Risk:**
+  Dynamically detects risks of practical constraint violations, such as "exceeding the expected loss limit" or "failing to achieve the target net profit", which occur by applying the above post-processing to the solver's theoretical solution, and feeds them back as warnings and insights on the dashboard.
+
+### 3. 🌪️ Model Robustness and Sensitivity Analysis
+Visualizes the sensitivity of the expected net profit of the optimized portfolio using a **tornado chart** when external parameters such as customer's settlement potential $C$, credit limit responsiveness $k$, and probability of default $PD$ fluctuate by $\pm 10\%$. This allows you to quantitatively understand which model parameters have a strong impact on management performance (ROI).
+
+---
+
+## 📐 Mathematical Model and Formulation Overview
+
+### 1. Decision Variables
+- $L_i \in [0, 100]$: Credit limit for customer $i$ (in ten thousands of JPY)
+
+### 2. Expected Annual Usage (EAD) Responsiveness Model
+The customer's willingness to spend follows a non-linear (exponential saturation) curve depending on the size of the credit limit.
+$$EAD_i(L_i) = C_i \left(1 - e^{-k_i L_i}\right)$$
+- $C_i$: Potential maximum annual settlement amount for customer $i$
+- $k_i$: Sensitivity of usage response to changes in credit limit
+
+### 3. Objective Function and Constraints
+
+#### Profit Maximization Mode
+$$\text{Maximize} \quad \sum_{i} \left[ r_i \cdot EAD_i(L_i) \cdot (1 - PD_i) - PD_i \cdot LGD_i \cdot EAD_i(L_i) \right]$$
+$$\text{Subject to} \quad \sum_{i} \left[ PD_i \cdot LGD_i \cdot EAD_i(L_i) \right] \le T_{\text{risk}}$$
+- $r_i$: Return yield ratio for customer $i$
+- $PD_i$: Probability of default for customer $i$
+- $LGD_i$: Loss given default for customer $i$
+- $T_{\text{risk}}$: Allowable expected loss limit for the entire portfolio
+
+---
+
+## 🛠️ Installation and Startup
+
+### 1. Conda Environment Setup (Recommended)
+This app requires the mathematical solver `ipopt`. By using the `environment.yml` included in the repository, you can reliably batch install the solver and all Python dependencies.
+
+```bash
+# 1. Clone the repository or move to the local directory
+cd credit_card_demo
+
+# 2. Create Conda environment from environment.yml
+conda env create -f environment.yml
+
+# 3. Activate the created environment
+conda activate credit_card_demo
+```
+
+### 2. Application Startup
+```bash
+streamlit run app.py
+```
+After startup, open **http://localhost:8501** (or the specified port) in your browser.
+
+---
+
+## ☁️ Deployment to Streamlit Community Cloud
+
+This repository can be deployed directly to Streamlit Community Cloud. It implements a robust mechanism to absorb environmental differences (such as differences in OS library paths) during deployment.
+
+1. **Automatic Recognition of Environment Configuration File:**
+   Streamlit Cloud automatically recognizes `environment.yml` in the repository root and starts the Conda container, so the `ipopt` solver is automatically installed at the system level even in the cloud.
+2. **Dynamic Executable Path Detection:**
+   The auto-detection logic in `app.py` automatically detects the path in the Streamlit Cloud environment (`/home/adminuser/.conda/bin/ipopt`) and passes it to Pyomo, so it runs immediately after deployment without any additional configuration.
+
+---
+
+## 🔬 Technology Stack
+
+- **Front-end / Dashboard:** Streamlit
+- **Optimization Model:** Pyomo
+- **Solver Engine:** Ipopt (COIN-OR)
+- **Data Manipulation:** Pandas, NumPy
+- **Data Visualization:** Plotly (Premium Interactive Chart), Matplotlib
+
+---
+
+## 📄 License
+This project is licensed under the [MIT License](LICENSE).
+
+<br><br>
+
+<a name="japanese"></a>
+---
+
+# (日本語)
 
 本アプリケーションは、数理最適化（Pyomo + NLPソルバー Ipopt）を用いて、クレジットカード会員個々のデフォルトリスク（デフォルト確率: PD、貸倒損失率: LGD）と決済意欲の弾力性モデルを考慮し、**ポートフォリオ全体の期待純利益を最大化（または期待損失を最小化）する最適な与信枠（クレジットカード限度額）アロケーションを動的にシミュレーションするダッシュボード**です。
 
