@@ -2,8 +2,9 @@
 ### Credit Limit Allocation Mathematical Optimization Simulator / クレジットカード与信枠アロケーション数理最適化シミュレータ
 
 [![Streamlit App](https://static.streamlit.io/badge_svg.svg)](https://credit-portfolio-optimizer-gwrbt3qndzw7p8t6euuumm.streamlit.app/)
+[![Azure App Service](https://img.shields.io/badge/Azure-App%20Service-0078D4?logo=microsoftazure)](https://credit-portfolio-optimizer.azurewebsites.net)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/)
+[![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/)
 
 English | [日本語](#japanese)
 
@@ -80,7 +81,34 @@ After startup, open **http://localhost:8501** (or the specified port) in your br
 
 ---
 
-## ☁️ Deployment to Streamlit Community Cloud
+## ☁️ Deployment to Azure App Service
+
+**Live Demo (Azure):** https://credit-portfolio-optimizer.azurewebsites.net
+
+Migrated from Streamlit Community Cloud to Azure App Service (Linux, Python 3.10) for improved performance.
+
+### Key Engineering Challenges Solved
+
+1. **Solver Installation without Conda**
+   Azure App Service uses `pip` only (no Conda support). Replaced `ipopt` conda package with `amplpy` binary wheel, reducing solver installation time from ~1–2 hours (source build) to ~30 seconds.
+
+2. **Oryx Build System Behavior**
+   Azure's Oryx build system extracts files to a randomized `/tmp/` path at each container startup. Referencing a `startup.sh` via absolute path always fails. Solution: embed all startup logic directly in the `appCommandLine` setting.
+
+   ```bash
+   # Correct approach: inline startup command
+   az webapp config set \
+     --startup-file "pip install -r requirements.txt && \
+                     python -m amplpy.modules install coin && \
+                     python -m streamlit run app.py --server.port 8000 --server.address 0.0.0.0"
+   ```
+
+3. **Port Configuration**
+   Azure App Service monitors port `8000` by default, while Streamlit defaults to `8501`. Explicitly set `--server.port 8000` to resolve the mismatch.
+
+---
+
+
 
 This repository can be deployed directly to Streamlit Community Cloud. It implements a robust mechanism to absorb environmental differences (such as differences in OS library paths) during deployment.
 
@@ -181,6 +209,25 @@ conda activate credit_card_demo
 streamlit run app.py
 ```
 起動完了後、ブラウザで **http://localhost:8501**（または指定のポート）を開いてください。
+
+---
+
+## ☁️ Azure App Service へのデプロイ
+
+**ライブデモ（Azure）:** https://credit-portfolio-optimizer.azurewebsites.net
+
+処理性能向上のため、Streamlit Community Cloud から Azure App Service（Linux, Python 3.10）へ移行しました。
+
+### 解決した技術的課題
+
+1. **Condaなし環境でのソルバーインストール**
+   Azure App Service は `pip` のみ対応（Conda 非対応）。`ipopt` の conda パッケージを `amplpy` バイナリ wheel に置き換えることで、ソルバーのインストール時間をソースビルド時の1〜2時間から約30秒に短縮。
+
+2. **Oryx ビルドシステムの挙動への対応**
+   Azure の Oryx はコンテナ起動のたびにファイルをランダムな `/tmp/` パスへ解凍する。そのため `startup.sh` を絶対パスで参照する方式は必ず失敗する。`appCommandLine` に直接コマンドを記述する方式で解決。
+
+3. **ポート設定**
+   Azure App Service のデフォルト監視ポートは `8000`、Streamlit のデフォルトは `8501`。`--server.port 8000` を明示することで不一致を解消。
 
 ---
 
