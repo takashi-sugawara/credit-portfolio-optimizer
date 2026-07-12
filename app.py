@@ -4,6 +4,7 @@ import numpy as np
 import pyomo.environ as pyo
 from pyomo.opt import SolverFactory
 import time
+from domain.rules import apply_business_rules
 
 # グラフライブラリのインポート（Plotlyを優先、Matplotlibをフォールバック）
 USE_PLOTLY = True
@@ -306,30 +307,14 @@ def solve_optimization(df, target_value, pd_multiplier=1.0, mode='profit_max'):
         shadow_price = 0.0
     
     # 実務の離散化処理とビジネスルールの適用（後処理）
-    limit_options = np.array([10, 30, 50, 70, 100])
-    rounded_limits = []
-    for i in range(N):
-        val = opt_limits[i]
-        job = df['Job'].iloc[i]
-        segment = df['Segment'].iloc[i]
-        curr_limit = df['CurrentLimit'].iloc[i]
-        
-        # 1. キリの良いメニューへの丸め（最小値は10万円）
-        closest_idx = np.abs(limit_options - val).argmin()
-        rounded_val = float(limit_options[closest_idx])
-            
-        # 2. ビジネスルール①：主婦・学生は一律10万円上限
-        if job in ['Housewife', 'Student']:
-            rounded_val = min(rounded_val, 10.0)
-            
-        # 3. ビジネスルール②：ショッピングの減枠は原則しない (顧客離反の防止)
-        if segment == 'Shopping':
-            if rounded_val < curr_limit:
-                rounded_val = curr_limit
-                
-        rounded_limits.append(rounded_val)
-        
-    return np.array(rounded_limits), shadow_price
+    rounded_limits = apply_business_rules(
+        raw_limits=np.array(opt_limits),
+        job=df['Job'],
+        segment=df['Segment'],
+        current_limit=df['CurrentLimit'],
+    )
+
+    return rounded_limits, shadow_price
 
 # ==========================================
 # 4. 効率的フロンティアのキャッシュ生成機能
