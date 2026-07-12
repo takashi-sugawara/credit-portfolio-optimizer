@@ -231,6 +231,19 @@ def get_ipopt_path():
         if os.path.exists(p):
             return p
     
+
+    # 4. amplpy modules経由でインストールされたIpoptを探索（Azure App Service向け）
+    #    amplpy.modules.load() が、amplpyが管理するソルバーバイナリのディレクトリを
+    #    現在プロセスのPATH環境変数に追加してくれる。
+    try:
+        import amplpy.modules as amplpy_modules
+        amplpy_modules.load()
+        path = shutil.which("ipopt")
+        if path:
+            return path
+    except Exception:
+        pass
+
     return None
 
 def solve_optimization(df, target_value, pd_multiplier=1.0, mode='profit_max'):
