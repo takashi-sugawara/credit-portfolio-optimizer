@@ -10,6 +10,12 @@ English | [日本語](#japanese)
 
 This application is a dashboard that dynamically simulates the optimal credit limit allocation to maximize the expected net profit (or minimize the expected loss) of the entire portfolio. It uses mathematical optimization (Pyomo + NLP solver Ipopt) and takes into account the default risk of individual credit card members (Probability of Default: PD, Loss Given Default: LGD) and the elasticity model of their willingness to spend.
 
+## 🗺️ Roadmap
+This is an actively evolving personal project (not intended for production use).
+See [docs/ROADMAP.md](docs/ROADMAP.md) for the phased plan toward an
+"Enterprise Optimization Platform" concept — currently in **Phase 1**
+(decoupling domain logic, adding test coverage).
+
 ---
 
 ## 🌟 Key Features
