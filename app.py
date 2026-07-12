@@ -363,6 +363,7 @@ def get_efficient_frontiers():
                 profits.append(total_rev - total_loss)
                 risks.append(total_loss)
             except Exception as e:
+                print(f"[DEBUG] solve_optimization failed: {e}")  # ← 追加
                 continue
                 
         frontiers[sc_name] = {
