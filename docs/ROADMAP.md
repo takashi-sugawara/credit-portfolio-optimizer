@@ -51,6 +51,20 @@ logic becomes an independent "optimization engine API" not tied to any UI.
 Given the scope, this is split into three stages.
 
 * Key Tasks:
+  * **2a-pre**: Set up a Dockerfile to pin the runtime environment (OS,
+    Python version, system-level dependencies such as Ipopt) as a
+    container image. This addresses environment drift discovered while
+    deploying to multiple platforms (see the Ipopt troubleshooting note
+    in the README): the same `get_ipopt_path()` fallback logic had to
+    special-case each hosting environment (Streamlit Cloud's Conda path,
+    Azure's amplpy-installed path, etc.), which does not scale as more
+    environments are added.
+    **Caveat**: Docker mitigates *application-layer* environment drift,
+    but does not eliminate platform-layer differences — host CPU
+    architecture (e.g. ARM64 vs x86_64), each cloud's container runtime
+    constraints (port conventions, startup time limits, filesystem
+    restrictions), and secret-management mechanisms still differ across
+    providers and need separate handling.
   * **2a**: FastAPI-fication only. The existing Streamlit UI is changed to
     call the API, and the API contract (Pydantic schemas) is finalized
     (Strangler Fig pattern)
@@ -163,6 +177,19 @@ This also serves as the infrastructure underpinning Phase 3's
 「最適化エンジンAPI」としての独立。大規模変更のため、以下3段階に分割する。
 
 * Key Tasks:
+  * **2a-pre**: Dockerfileの整備。実行環境（OS・Pythonバージョン・
+    Ipoptなどのシステム依存パッケージ）をコンテナイメージとして固定化する。
+    複数環境へのデプロイで発覚した環境差異（README記載のIpopt
+    トラブルシューティング参照）への対応：`get_ipopt_path()`のフォール
+    バックロジックが、Streamlit CloudのCondaパス・Azureのamplpy
+    インストールパスなど、環境ごとに個別対応を積み増す構造になって
+    おり、環境が増えるたびにスケールしない設計だった。
+    **留意点**：Dockerが吸収できるのは*アプリケーションレイヤー*の
+    環境差異であり、プラットフォームレイヤーの差異（ホストのCPU
+    アーキテクチャの違い〈ARM64 vs x86_64等〉、各クラウドのコンテナ
+    実行基盤固有の制約〈ポート規約・起動時間制限・ファイルシステム
+    制約〉、シークレット管理の仕組みの違い等）までは解消しない点に
+    留意する。
   * **2a**: FastAPI化のみ。既存Streamlit UIはAPIを叩く構成に変更し、
     API契約（Pydanticスキーマ）を固める（Strangler Figパターン）
   * **2b**: 非同期タスクキュー（Celery / Redis等）とジョブステータスAPIの導入。
