@@ -112,6 +112,24 @@ Migrated from Streamlit Community Cloud to Azure App Service (Linux, Python 3.10
 3. **Port Configuration**
    Azure App Service monitors port `8000` by default, while Streamlit defaults to `8501`. Explicitly set `--server.port 8000` to resolve the mismatch.
 
+4. **Ipopt Solver Not Found After Migrating to GitHub Actions CI/CD**
+   After switching from manual deployment to a GitHub Actions-based
+   CI/CD pipeline, the app crashed with `ValueError: max() arg is an
+   empty sequence`. The real cause was hidden behind a caught exception
+   (`except Exception: continue`) inside the efficient-frontier
+   calculation loop, so the visible error was misleading.
+
+   **Approach**: Added temporary debug logging to surface the
+   swallowed exception, which revealed the actual error:
+   `No executable found for solver 'ipopt'`. The root cause was that
+   `amplpy.modules install coin` installs Ipopt to a path not covered
+   by the existing solver-path detection logic (`get_ipopt_path()`).
+   Fixed by adding a fallback that calls `amplpy.modules.load()`,
+   which registers amplpy-managed solver binaries in `PATH`.
+
+   **Takeaway**: When a visible error looks unrelated to the actual
+   failure, check for silently caught exceptions before assuming the
+   visible error is the root cause.
 ---
 
 
@@ -235,6 +253,24 @@ streamlit run app.py
 3. **ポート設定**
    Azure App Service のデフォルト監視ポートは `8000`、Streamlit のデフォルトは `8501`。`--server.port 8000` を明示することで不一致を解消。
 
+4. **GitHub Actions CI/CD移行後にIpoptソルバーが見つからなくなった問題**
+   手動デプロイからGitHub ActionsベースのCI/CDパイプラインに切り替えた後、
+   アプリが `ValueError: max() arg is an empty sequence` でクラッシュした。
+   実際の原因は、効率的フロンティア計算ループ内の例外処理
+   （`except Exception: continue`）に隠れており、表示されているエラー
+   メッセージ自体は本質的な原因を示していなかった。
+
+   **アプローチ**: 一時的にデバッグログを追加して握りつぶされていた例外を
+   可視化したところ、真のエラー `No executable found for solver 'ipopt'`
+   が判明。根本原因は、`amplpy.modules install coin` がIpoptをインストール
+   するパスが、既存のソルバーパス検出ロジック（`get_ipopt_path()`）で
+   カバーされていなかったこと。`amplpy.modules.load()` を呼び出すことで
+   amplpy管理下のソルバーバイナリを `PATH` に登録するフォールバックを
+   追加して解決した。
+
+   **教訓**: 表示されているエラーが実際の障害と無関係に見える場合は、
+   それを根本原因と決めつける前に、握りつぶされている例外がないか
+   確認すべきである。
 ---
 
 ## ☁️ Streamlit Community Cloud へのデプロイ
