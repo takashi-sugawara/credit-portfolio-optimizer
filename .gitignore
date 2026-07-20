@@ -5,3 +5,6 @@ tests/test_result.log
 *.log
 __pycache__/
 .pytest_cache/
+*.code-workspace
+docs/test_report.md
+docs/walkthrough.md
