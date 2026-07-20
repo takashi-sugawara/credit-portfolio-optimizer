@@ -78,6 +78,21 @@ Given the scope, this is split into three stages.
   * Establish an interface that agents or other systems can call directly
     (Contract-first Design)
   * Enable independent, container-level scalability
+* Deployment Strategy:
+  * Streamlit Community Cloud cannot host a separate FastAPI process, a
+    Celery/Redis worker, or a non-Streamlit frontend — it only runs a
+    single Streamlit app. Phase 2 work therefore targets Azure Web App
+    (Docker-based) as the primary deployment target from 2a-pre onward.
+  * The existing Streamlit demo (`app.py`) is kept alive rather than
+    retired: it still has value as a lightweight, shareable demo.
+  * Rather than splitting into separate branches (which would require
+    duplicating fixes to shared logic across branches), both
+    deployments are built from a single `main` branch, separated by
+    directory: `app.py` (+ `domain/`) stays the Streamlit Cloud entry
+    point, while new FastAPI code lands under its own directory (e.g.
+    `api/`) that Azure's Docker build targets. `domain/` remains the
+    shared core consumed by both.
+  * The Streamlit Cloud deployment URL may change; that is acceptable.
 
 ## Phase 3: Evolution into an Agent Platform (AI Agent Integration)
 
@@ -201,6 +216,20 @@ This also serves as the infrastructure underpinning Phase 3's
   * Agentや他システムが直接APIを叩けるインターフェースの確立
     （Contract-first Design）
   * コンテナ単位での独立したスケーラビリティの確保
+* デプロイ方針:
+  * Streamlit Community Cloudは単一のStreamlitアプリしか動かせず、
+    別プロセスのFastAPIサーバー・Celery/Redisワーカー・
+    Streamlit以外のフロントエンドは配置できない。そのため2a-pre以降、
+    Azure Web App（Docker）を主デプロイ先として進める。
+  * 既存のStreamlitデモ（`app.py`）は廃止せず残す。軽量に共有できる
+    デモとして引き続き価値がある
+  * ブランチを分岐すると共有ロジックの修正を両ブランチに反映する
+    二重メンテが発生するため、分岐はせず`main`ブランチ1本のまま、
+    ディレクトリで分離する：`app.py`（＋`domain/`）はStreamlit Cloud
+    向けエントリーポイントとして維持し、新設するFastAPIコードは
+    別ディレクトリ（例：`api/`）に置き、Azure側のDockerビルドは
+    そちらを対象とする。`domain/`は両者が共有する中核として維持する
+  * Streamlit CloudのデプロイURLが変わっても差し支えない
 
 ## Phase 3: エージェント・プラットフォームへの進化 (AI Agent Integration)
 
