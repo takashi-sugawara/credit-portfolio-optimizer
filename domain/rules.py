@@ -8,7 +8,9 @@ Pyomo/Ipoptが算出する連続値の理論解を、実務適用可能な離散
 import numpy as np
 import pandas as pd
 
-DEFAULT_LIMIT_OPTIONS = (10, 30, 50, 70, 100)
+from domain.config import LIMIT_OPTIONS, HOUSEWIFE_STUDENT_CAP
+
+DEFAULT_LIMIT_OPTIONS = LIMIT_OPTIONS
 
 
 def round_to_menu(value: float, limit_options=DEFAULT_LIMIT_OPTIONS) -> float:
@@ -33,7 +35,7 @@ def apply_business_rules(
     segment: pd.Series,
     current_limit: pd.Series,
     limit_options=DEFAULT_LIMIT_OPTIONS,
-    housewife_student_cap: float = 10.0,
+    housewife_student_cap: float = HOUSEWIFE_STUDENT_CAP,
 ) -> np.ndarray:
     """
     ソルバーの理論解（連続値）に対し、実務ルールを順に適用する。

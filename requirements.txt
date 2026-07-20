@@ -5,3 +5,4 @@ pyomo
 matplotlib
 plotly
 amplpy
+pyyaml

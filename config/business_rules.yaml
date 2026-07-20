@@ -1,0 +1,15 @@
+# ビジネスルール閾値の外部設定。
+# ここを変更するだけで、コードを変更・レビューせずに反映される値のみを置く。
+# (与信枠メニュー・主婦学生上限・景気シナリオの前提)
+
+credit_limit_menu:
+  options: [10, 30, 50, 70, 100]
+  housewife_student_cap: 10.0
+
+economic_scenarios:
+  Neutral:
+    pd_multiplier: 1.0
+  Optimistic:
+    pd_multiplier: 0.7
+  Pessimistic:
+    pd_multiplier: 1.5

@@ -36,9 +36,9 @@ separation of responsibilities that can be unit tested.
   * [x] Add unit tests for the business rules (Ipopt-independent,
         runs fast with pandas/numpy only)
   * [x] Set up a CI pipeline with GitHub Actions
-  * [ ] Extract the mathematical model construction logic (Pyomo part)
+  * [x] Extract the mathematical model construction logic (Pyomo part)
         into its own module
-  * [ ] Externalize business rule thresholds (rounding menu, caps, etc.)
+  * [x] Externalize business rule thresholds (rounding menu, caps, etc.)
         into a config file (YAML/JSON)
 * Objectives:
   * Pay down technical debt through refactoring
@@ -179,8 +179,8 @@ This also serves as the infrastructure underpinning Phase 3's
   * [x] ビジネスルールに対するユニットテストの導入
         （Ipopt非依存、pandas/numpyのみで完結する軽量テスト）
   * [x] GitHub Actions による CI パイプラインの構築
-  * [ ] 数理モデル構築ロジック（Pyomo部分）の分離
-  * [ ] ビジネスルールの閾値（丸めメニュー、上限額等）を
+  * [x] 数理モデル構築ロジック（Pyomo部分）の分離
+  * [x] ビジネスルールの閾値（丸めメニュー、上限額等）を
         外部設定ファイル（YAML/JSON）に切り出し
 * Objectives:
   * リファクタリングによる技術的負債の返済
