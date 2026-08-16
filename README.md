@@ -2,7 +2,7 @@
 ### Credit Limit Allocation Mathematical Optimization Simulator / クレジットカード与信枠アロケーション数理最適化シミュレータ
 
 [![Streamlit App](https://static.streamlit.io/badge_svg.svg)](https://credit-portfolio-optimizer-gwrbt3qndzw7p8t6euuumm.streamlit.app/)
-[![Azure App Service](https://img.shields.io/badge/Azure-App%20Service-0078D4?logo=microsoftazure)](https://credit-portfolio-optimizer.azurewebsites.net)
+[![Azure App Service](https://img.shields.io/badge/Azure-App%20Service-0078D4?logo=microsoftazure)](#️-azure-app-service-deployment-dev-reference)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/)
 
@@ -87,11 +87,16 @@ After startup, open **http://localhost:8501** (or the specified port) in your br
 
 ---
 
-## ☁️ Deployment to Azure App Service
+## ☁️ Azure App Service Deployment (Dev Reference)
 
-**Live Demo (Azure):** https://credit-portfolio-optimizer.azurewebsites.net
+This app was previously deployed to Azure App Service (Linux, Python 3.10) to
+explore production-style hosting. **The Azure instance is currently stopped
+to avoid ongoing cost**, and is only spun back up during active development
+sessions rather than run as a persistent public demo. For an always-on free
+demo, see the Streamlit Community Cloud link above.
 
-Migrated from Streamlit Community Cloud to Azure App Service (Linux, Python 3.10) for improved performance.
+The engineering notes below remain as a reference for anyone (including a
+future me) redeploying to Azure App Service.
 
 ### Key Engineering Challenges Solved
 
@@ -236,11 +241,15 @@ streamlit run app.py
 
 ---
 
-## ☁️ Azure App Service へのデプロイ
+## ☁️ Azure App Service へのデプロイ（開発時の検証用）
 
-**ライブデモ（Azure）:** https://credit-portfolio-optimizer.azurewebsites.net
+本番相当のホスティングパターンを検証するため、以前 Azure App Service
+（Linux, Python 3.10）にもデプロイしていました。**課金を避けるため、
+現在Azure側のインスタンスは停止しています**。常時公開するデモとしてではなく、
+開発時に必要なタイミングでのみ一時的に起動する検証環境という位置づけです。
+常時稼働の無料デモは、上記の Streamlit Community Cloud をご利用ください。
 
-処理性能向上のため、Streamlit Community Cloud から Azure App Service（Linux, Python 3.10）へ移行しました。
+以下の技術的知見は、将来Azureへ再デプロイする際の参考資料として残しています。
 
 ### 解決した技術的課題
 
